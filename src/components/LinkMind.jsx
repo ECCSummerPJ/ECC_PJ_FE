@@ -46,14 +46,14 @@ const ListWrapper = styled.div`
 `;
 
 const ListItem = styled.div`
-  width: 250px;
+  width: 200px;
   display: flex;
   flex-direction: column;
   gap: 5px;
 `;
 
 const ItemTitle = styled.div`
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 400;
   font-family: Pretendard, sans-serif;
   color: black;
@@ -61,7 +61,7 @@ const ItemTitle = styled.div`
 `;
 
 const ItemSubtitle = styled.div`
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
   font-family: Pretendard, sans-serif;
   color: #767676;

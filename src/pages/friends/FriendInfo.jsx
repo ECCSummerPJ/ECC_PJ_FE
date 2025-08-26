@@ -2,7 +2,9 @@
 import styled from "styled-components";
 import FriendInfoCard from "./FriendInfoCard";
 import FriendPostListLayout from "./FriendPostListLayout";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getFriendScraps } from "../../api/friends";
 
 const FriendContentWrapper = styled.div`
   width: 100%;
@@ -15,32 +17,39 @@ const FriendContentWrapper = styled.div`
 
   justify-items: center;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 `;
 
 export default function FriendInfo() {
-  const { id } = useParams();
+  const location = useLocation();
+  const { nickname, friendUserId, initialFriendshipId } = location.state || {};
 
-  const friendData = {
-    email: "test@example.com",
-    userId: `ID_is_${id}`,
-    profileImg: "/assets/profile.jpg",
-  };
+  // 문제가 되는 코드
+  const id = useParams();
+  const [friendPosts, setFriendPosts] = useState([]);
 
-  const friendPosts = [
-    { id: 1, title: "여름 너무 더운데 우짜나~", description: "내 여름 추구미...", isRescrapped: true },
-    { id: 2, title: "오늘 점심은 칼국수", description: "냉우동보다 좋음", isRescrapped: false },
-    { id: 3, title: "바람이 시원하다", description: "가을 느낌", isRescrapped: true },
-  ];
+  // useEffect(() => {
+  //   const loadFriendPosts = async () => {
+  //     try {
+  //       const data = await getFriendScraps(id); 
+  //       console.log("친구 스크랩 목록:", data);
+  //       setFriendPosts(data);
+  //     } catch (err) {
+  //       console.error("친구 스크랩 불러오기 실패:", err);
+  //     }
+  //   };
+  //   loadFriendPosts();
+  // }, [id]);
 
   return (
     <FriendContentWrapper>
       <FriendInfoCard
-        email={friendData.email}
-        userId={friendData.userId}
-        profileImg={friendData.profileImg}
+        userId={nickname}
+        friendUserId={friendUserId}
+        initialFriendshipId={initialFriendshipId}
       />
       <FriendPostListLayout posts={friendPosts} />
     </FriendContentWrapper>
   );
 }
+

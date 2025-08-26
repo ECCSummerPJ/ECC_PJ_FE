@@ -1,5 +1,7 @@
+// FollowButton.jsx
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { addFriend, removeFriendById } from "../api/friends";
 
 const FollowButtonStyle = styled.button.withConfig({
   shouldForwardProp: (prop) => prop !== "isFollowing"
@@ -18,11 +20,39 @@ const FollowButtonStyle = styled.button.withConfig({
   color: black;
 `;
 
-const FollowButton = () => {
-  const [isFollowing, setIsFollowing] = useState(true); // true면 팔로잉, false면 팔로우
+const FollowButton = ({ friendUserId, initialFriendshipId }) => {
+  const [isFollowing, setIsFollowing] = useState(true); // 초기 모두 팔로잉
+  const [friendshipId, setFriendshipId] = useState(initialFriendshipId ?? null);
+  const [loading, setLoading] = useState(false);
 
-  const toggleFollow = () => {
-    setIsFollowing(prev => !prev);
+  useEffect(() => {
+    setIsFollowing(!!initialFriendshipId);
+    setFriendshipId(initialFriendshipId ?? null);
+  }, [initialFriendshipId]);
+
+  const toggleFollow = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      if (isFollowing) {
+        // 언팔로우
+        if (!friendshipId) throw new Error("친구 관계 ID가 없습니다.");
+        await removeFriendById(friendshipId);
+        setIsFollowing(false);
+        setFriendshipId(null);
+      } else {
+        // 팔로우
+        const res = await addFriend(friendUserId);
+        setFriendshipId(res.friendshipId);
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      console.error("팔로우/언팔 오류:", err);
+      alert(err?.response?.data?.message || err.message || "오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

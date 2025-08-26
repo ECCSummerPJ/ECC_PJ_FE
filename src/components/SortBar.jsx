@@ -64,6 +64,7 @@ const DropdownWrapper = styled.div`
 
 const SortBar = ({ selectedCategory, onCategoryChange }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [sortOrder, setSortOrder] = useState("latest");
 
   const handleClick = (btnId) => {
     setOpenDropdown(openDropdown === btnId ? null : btnId); // 토글만
@@ -93,7 +94,13 @@ const SortBar = ({ selectedCategory, onCategoryChange }) => {
         </Label>
         {openDropdown === 2 && (
           <DropdownWrapper style={{ left: "-35px" }}>
-            <SortBarBox2 />
+            <SortBarBox2
+              sortOrder={sortOrder}
+              onSortChange={(order) => {
+                setSortOrder(order);   // 정렬 상태 변경
+                setOpenDropdown(null); // 드롭다운 닫기
+              }}
+            />
           </DropdownWrapper>
         )}
       </ButtonGroup>

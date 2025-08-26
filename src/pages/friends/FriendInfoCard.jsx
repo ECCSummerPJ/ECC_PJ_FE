@@ -2,6 +2,7 @@
 import styled from "styled-components";
 import profileImage from "../../assets/profile.jpg";
 import FollowButton from "../../components/FollowButton";
+import { useLocation } from "react-router-dom";
 
 /* ===== 프로필 카드 ===== */
 const ProfileWrapper = styled.div`
@@ -46,18 +47,23 @@ const IdText = styled.div`
   font-weight: 700;
 `;
 
-// 추후에 src 속성 안 profileImage -> profileImg 변경 후 import 삭제
-export default function FriendInfoCard({ email, userId, profileImg }) {
+export default function FriendInfoCard() {
+  const location = useLocation();
+  const { nickname, friendUserId, initialFriendshipId } = location.state || {};
+  
   return (
+    
     <ProfileWrapper>
       <ProfileInfoGroup>
         <ProfileImage src={profileImage} alt="프로필" />
         <ProfileTextGroup>
-          <EmailText>{email}</EmailText>
-          <IdText>{userId}</IdText>
+          <IdText>{nickname}</IdText>
         </ProfileTextGroup>
       </ProfileInfoGroup>
-      <FollowButton />
+      <FollowButton 
+        friendUserId={friendUserId} 
+        initialFriendshipId={initialFriendshipId}  
+      />
     </ProfileWrapper>
   );
 }

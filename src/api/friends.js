@@ -21,7 +21,16 @@ export const findFriendshipByFriendId = async (friendUserId) => {
   return list.find((f) => Number(f.friendUserId) === Number(friendUserId)) || null;
 };
 
-export const getFriendScraps = async ( friendUserId ) => {
-  const res = await api.get(`/friend/${friendUserId}/scraps`);
-  return res.data;
+// export const getFriendScraps = async ( friendUserId ) => {
+//   const res = await api.get(`/friend/${friendUserId}/scraps`);
+//   return res.data;
+// };
+
+export const getFriendScraps = async (friendUserId) => {
+  try {
+    const res = await api.get(`/friend/${friendUserId}/scraps`);
+    return res.data;
+  } catch (err) {
+    console.error("❌ API 호출 실패", err.response?.status, err.response?.data);
+  }
 };

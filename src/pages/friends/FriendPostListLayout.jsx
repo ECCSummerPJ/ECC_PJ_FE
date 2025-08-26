@@ -5,7 +5,7 @@ import Pagination from "../../components/Pagination";
 import externalLink from "../../assets/icons/external-link.svg";
 import rescrapPin from "../../assets/icons/pin_fill.svg";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const FrameWrapper = styled.div`
   width: 100%;
@@ -116,7 +116,30 @@ const ContentItem = ({ title, description, onClick, isRescrapped }) => (
 
 export default function FriendPostListLayout({ posts }) {
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 4;
   const navigate = useNavigate();
+
+  // const filteredScraps = posts.filter((scrap) => {
+  //   // 1. 즐겨찾기 적용
+  //   if (activeTab === "favorites" && !scrap.favorite) return false;
+
+  //   // 2. 카테고리 적용
+  //   if (selectedCategory && scrap.categoryId !== selectedCategory)
+  //     return false;
+
+  //   return true;
+  // });
+  
+  useEffect(() => {
+    setTotalPages(posts && posts.length > 0 ? Math.ceil(posts.length / pageSize) : 1);
+    setCurrentPage(1); 
+  }, [posts]);
+
+  const pagedScraps = posts && posts.length > 0
+    ? posts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    : [];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", width: "100%", gap: "10px" }}>
@@ -127,23 +150,35 @@ export default function FriendPostListLayout({ posts }) {
         </HeaderWrapper>
         <FrameWrapper>
           <InnerWrapper>
-            {posts.map((item) => (
-              <div key={item.id} style={{ width: "100%" }}>
-                <ContentItem
-                  title={item.title}
-                  description={item.description}
-                  isRescrapped={item.isRescrapped} 
-                  onClick={() => navigate(`/post/${item.id}`)}
-                />
-                {item.id !== posts[posts.length - 1].id && <Divider />}
+            {pagedScraps.length > 0 ? (
+              pagedScraps.map((item, index) => (
+                <div key={item.scrapId} style={{ width: "100%" }}>
+                  <ContentItem
+                    title={item.scrapTitle}
+                    description={item.scrapMemo}
+                    isRescrapped={item.isRescrapped} 
+                    onClick={() => navigate(`/post/${item.scrapId}`)}
+                  />
+                  {index !== pagedScraps.length - 1 && <Divider />}
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#767676", fontSize: "16px" }}>
+                스크랩이 없습니다.
               </div>
-            ))}
+            )}
           </InnerWrapper>
         </FrameWrapper>
       </div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Pagination currentPage={1} totalPages={5} />
-      </div>
+      {pagedScraps.length > 0 && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

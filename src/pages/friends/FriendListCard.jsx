@@ -5,13 +5,13 @@ import FriendCard from "./FriendCard";
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1300px;
+  max-width: 1200px;
   margin: 0 auto;
   max-height: 500px;
 
   background: #FFE3D7;
   border-radius: 30px;
-  padding: 30px;
+  padding: 20px;
   gap: 20px;
 
   display: grid;

@@ -50,7 +50,14 @@ export default function FriendCard({ friend }) {
     <CardWrapper>
       <ProfileContainer>
         <ProfileImage src={profile} alt="친구 프로필" /> 
-        <Username to={`/friends/${friend.friendUserId}`}>
+        <Username 
+          to={`/friends/${friend.friendUserId}`} 
+          state={{ 
+            nickname: friend.friendNickname, 
+            friendUserId: friend.friendUserId,
+            initialFriendshipId: friend.friendshipId
+          }}
+        >
           {friend.friendNickname}
         </Username>
       </ProfileContainer>
