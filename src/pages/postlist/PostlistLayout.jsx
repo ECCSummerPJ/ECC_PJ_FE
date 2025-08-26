@@ -4,7 +4,7 @@ import SortBar from "../../components/SortBar";
 import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getScraps } from "../../api/scraps";
+import { getScraps, getCategoryScraps } from "../../api/scraps";
 
 const FrameWrapper = styled.div`
   width: 100%;
@@ -94,10 +94,17 @@ export default function PostlistLayout() {
   useEffect(() => {
     const loadScraps = async () => {
       try {
-        const data = await getScraps({
-          categoryId: selectedCategory,
-          favorite: activeTab === "favorites" ? true : undefined,
-        });
+        let data;
+        console.log(selectedCategory);
+        if (selectedCategory) {
+          data = await getCategoryScraps(selectedCategory, {
+            favorite: activeTab === "favorites" ? true : undefined,
+          });
+        } else {
+          data = await getScraps({
+            favorite: activeTab === "favorites" ? true : undefined,
+          });
+        }
         console.log("스크랩 응답:", data);
 
         setScraps(Array.isArray(data) ? data : []);
@@ -111,12 +118,7 @@ export default function PostlistLayout() {
   }, [selectedCategory, activeTab]);
 
   const filteredScraps = scraps.filter((scrap) => {
-    // 1. 즐겨찾기 적용
     if (activeTab === "favorites" && !scrap.favorite) return false;
-
-    // 2. 카테고리 적용
-    if (selectedCategory && scrap.categoryId !== selectedCategory) return false;
-
     return true;
   });
 
@@ -134,26 +136,28 @@ export default function PostlistLayout() {
           <SortBar
             selectedCategory={selectedCategory}
             onCategoryChange={(categoryId) => {
-              if (selectedCategory === categoryId) {
-                setSelectedCategory(null); // 이미 선택된 카테고리면 해제
-              } else {
-                setSelectedCategory(categoryId);
-              }
+              setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
             }}
           />
         </HeaderWrapper>
         <FrameWrapper>
           <InnerWrapper>
-            {pagedScraps.map((item, index) => (
-              <div key={item.scrapId} style={{ width: "100%" }}>
-                <ContentItem
-                  title={item.scrapTitle}
-                  description={item.scrapMemo}
-                  onClick={() => navigate(`/post/${item.scrapId}`)}
-                />
-                {index !== pagedScraps.length - 1 && <Divider />}
+            {pagedScraps.length > 0 ? (
+              pagedScraps.map((item, index) => (
+                <div key={item.scrapId} style={{ width: "100%" }}>
+                  <ContentItem
+                    title={item.scrapTitle}
+                    description={item.scrapMemo}
+                    onClick={() => navigate(`/post/${item.scrapId}`)}
+                  />
+                  {index !== pagedScraps.length - 1 && <Divider />}
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#767676", fontSize: "16px" }}>
+                스크랩이 없습니다.
               </div>
-            ))}
+            )}
           </InnerWrapper>
         </FrameWrapper>
       </div>

@@ -68,7 +68,6 @@ export const SortBarBox1 = ({ selectedCategory, onCategoryChange }) => {
       loadCategories();
     }, []);
 
-  
     
   return (
     <div>
@@ -81,10 +80,12 @@ export const SortBarBox1 = ({ selectedCategory, onCategoryChange }) => {
               style={{
                 fontWeight: selectedCategory === cat.categoryId ? 'bold' : 'normal',
               }}
-              onClick={() => onCategoryChange(cat.categoryId)} 
-            >
-              {cat.categoryName}
-            </BoxItem>
+                onClick={() => {
+                  onCategoryChange(cat.categoryId);
+                }}
+              >
+                {cat.categoryName}
+              </BoxItem>
             <BoxDivider />
           </div>
         ))}
@@ -106,7 +107,7 @@ export const SortBarBox1 = ({ selectedCategory, onCategoryChange }) => {
                 onClose={() => setOpenMore(false)}
                 onSave={(value) => {
                   console.log("새 카테고리 저장:", value);
-                  onCategoryChange(cat.categoryId);
+                  onCategoryChange(value);
                   setOpenMore(false);
                 }}
               />
