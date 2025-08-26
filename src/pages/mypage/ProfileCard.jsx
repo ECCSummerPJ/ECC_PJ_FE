@@ -1,9 +1,41 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import profile from "../../assets/profile.jpg";
+import { api } from "../../lib/api";
+import { useState, useEffect } from "react";
 
+export default function ProfileCard() {
+  const [isProfile, setIsProfile] = useState({});
 
-/* ===== 프로필 카드 ===== */
+  useEffect(() => {
+    api
+      .get(`/profile`)
+      .then((res) => {
+        setIsProfile(res.data);
+        console.log("마이페이지 조회:", res.data);
+      })
+      .catch((err) => {
+        console.log("조회 실패: ", err.response?.data || err.message);
+      });
+  }, []);
+
+  return (
+    <ProfileWrapper>
+      <ProfileInfoGroup>
+        {/* <ProfileImageBg /> */}
+        <ProfileImage src={profile} alt="프로필" />
+        <ProfileTextGroup>
+          <EmailText>{isProfile.email || ""}</EmailText>
+          <IdText>{isProfile.nickname || ""}</IdText>
+        </ProfileTextGroup>
+      </ProfileInfoGroup>
+      <Link to={`/mypage/edit`} style={{ textDecoration: `none` }}>
+        <ProfileButton>프로필/회원정보 수정</ProfileButton>
+      </Link>
+    </ProfileWrapper>
+  );
+}
+
 const ProfileWrapper = styled.div`
   width: 1232px;
   display: inline-flex;
@@ -52,7 +84,7 @@ const ProfileButton = styled.div`
   background: #ffe3d7;
   border-radius: 50px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,29 +94,3 @@ const ProfileButton = styled.div`
   font-family: Pretendard;
   font-weight: 500;
 `;
-
-
-
-/* ===== MyPageCard 컴포넌트 ===== */
-export default function ProfileCard() {
-  const email = "email: ewha12345678@ewha.ac.kr";
-  const userId = "ID_is_ewhawuniv"
-
-  return (
-      <ProfileWrapper>
-        <ProfileInfoGroup>
-          {/* <ProfileImageBg /> */}
-          <ProfileImage src={profile} alt="프로필" />
-          <ProfileTextGroup>
-            <EmailText>{email}</EmailText>
-            <IdText>{userId}</IdText>
-          </ProfileTextGroup>
-        </ProfileInfoGroup>
-        <Link to={`/mypage/edit`} style={{ textDecoration: `none` }}>
-          <ProfileButton>
-            프로필/회원정보 수정
-          </ProfileButton>
-        </Link>
-      </ProfileWrapper>
-  );
-}

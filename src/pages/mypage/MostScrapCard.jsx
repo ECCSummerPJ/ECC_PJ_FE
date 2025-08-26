@@ -1,8 +1,42 @@
 import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { api } from "../../lib/api";
 
-/* ===== 카드 영역 ===== */
+export default function MostScarpCard() {
+  const [mostScrap, setMostScrap] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("/profile/statistics")
+      .then((res) => {
+        let list = res.data?.mostScrappedCategories ?? [];
+        list = [...list].sort((a, b) => b.viewCount - a.viewCount);
+        setMostScrap(list);
+        console.log("가장 많이 스크랩 된 게시물 순위:", list);
+      })
+      .catch((err) => {
+        console.log("오류: ", err.response?.data || err.message);
+        setMostScrap([]);
+      });
+  }, []);
+
+  return (
+    <CardWrapper>
+      <CardTitle>스크랩 최다 카테고리</CardTitle>
+      <CardList>
+        {mostScrap.map((item, idx) => (
+          <CardItem key={item.scrapId ?? idx}>
+            <CardItemNumber>{idx + 1}.</CardItemNumber>
+            <CardItemText>{item.categoryName}</CardItemText>
+          </CardItem>
+        ))}
+      </CardList>
+    </CardWrapper>
+  );
+}
+
 const CardWrapper = styled.div`
-  width: 100%;
+  width: 30vw;
   // height: 544px;
   border: 1px solid #d7d7d7;
   border-radius: 30px;
@@ -46,29 +80,3 @@ const CardItemText = styled.div`
   font-family: Pretendard;
   font-weight: 400;
 `;
-
-const mostViewedScraps = [
-  "첫 번째로 자주 본 스크랩",
-  "두 번째로 자주 본 스크랩",
-  "세 번째로 자주 본 스크랩",
-  "네 번째로 자주 본 스크랩",
-  "다섯 번째로 자주 본 스크랩",
-];
-
-const cardTitle = "스크랩 최다 카테고리";
-
-export default function MostScarpCard() {
-  return (
-    <CardWrapper>
-      <CardTitle>{cardTitle}</CardTitle>
-      <CardList>
-        {mostViewedScraps.map((text, idx) => (
-          <CardItem key={idx}>
-            <CardItemNumber>{idx + 1}.</CardItemNumber>
-            <CardItemText>{text}</CardItemText>
-          </CardItem>
-        ))}
-      </CardList>
-    </CardWrapper>
-  );
-}

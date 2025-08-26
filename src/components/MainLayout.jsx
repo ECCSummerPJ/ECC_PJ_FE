@@ -21,14 +21,14 @@ export const MainLayout = () => {
 
   useEffect(() => {
     const cached =
-      window?.user?.nickname ||
       window.sessionStorage.getItem("nickname") ||
-      window.localStorage.getItem("nickname");
+      window.localStorage.getItem("nickname") ||
+      window?.user?.nickname;
     if (cached) {
       setNickname(cached);
       return;
     }
-  });
+  }, [[pathname]]);
 
   return (
     <Layout>

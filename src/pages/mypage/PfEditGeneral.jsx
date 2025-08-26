@@ -1,25 +1,61 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import PWCheckButton from "../../components/PWCheckButton";
 import cameraIcon from "../../assets/icons/camera.svg";
 import { PopupModal } from "../../components";
 import { DeleteModal } from "../../components";
 import { api } from "../../lib/api";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PfEditGeneral = () => {
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   const [confirm, setConfirm] = useState("");
   const [logoutModal, setLogoutModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [email, setEmail] = useState("");
 
-  const isMatch = password !== "" && password === confirm;
+  const isMatch = newPassword !== "" && newPassword === confirm;
+
+  const isEdited = useMemo(() => {
+    return isMatch;
+  }, [isMatch]);
 
   const handleLogout = () => {
     api.post("/auth/logout");
     setLogoutModal(false);
   };
 
-  const handleDelete = () => {};
+  useEffect(() => {
+    const cachedNickname =
+      window.sessionStorage.getItem("nickname") ||
+      window.localStorage.getItem("nickname");
+
+    const cachedEmail =
+      window.sessionStorage.getItem("email") ||
+      window.localStorage.getItem("email");
+
+    if (cachedNickname) setNickname(cachedNickname);
+    if (cachedEmail) setEmail(cachedEmail);
+  }, []);
+
+  const handleEdit = async () => {
+    const body = { nickname, email, newPassword: newPassword || undefined };
+    try {
+      await api.patch("/profile", body);
+
+      window.sessionStorage.setItem("nickname", nickname);
+      window.sessionStorage.setItem("email", email);
+
+      setIsEdit(false);
+      navigate("/mypage");
+      console.log("프로필 수정 성공:", body);
+    } catch (err) {
+      console.log("오류:", err.response?.data || err.message);
+    }
+  };
 
   return (
     <Container>
@@ -36,19 +72,34 @@ const PfEditGeneral = () => {
         <Field>
           <Label>닉네임</Label>
           <InputField>
-            <InputWrapper placeholder="닉네임을 입력하세요" />
+            <InputWrapper
+              placeholder="닉네임을 입력하세요"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
           </InputField>
         </Field>
 
         <Field>
-          <Label>비밀번호</Label>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <Label>비밀번호</Label>
+            <div style={{ color: "#989898", marginTop: 10, fontSize: 15 }}>
+              기존 비밀번호
+              <br />
+              혹은
+              <br />
+              변경할 비밀번호를
+              <br />
+              입력해주세요
+            </div>
+          </div>
           <PasswordSection>
             <PasswordField>
               <PasswordInput
                 type="password"
                 placeholder="비밀번호 입력"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
               />
               <PWCheckButton />
             </PasswordField>
@@ -67,7 +118,11 @@ const PfEditGeneral = () => {
         <Field>
           <Label>이메일</Label>
           <InputField>
-            <InputWrapper placeholder="이메일을 입력하세요" />
+            <InputWrapper
+              placeholder="이메일을 입력하세요"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </InputField>
         </Field>
       </InputSection>
@@ -80,9 +135,16 @@ const PfEditGeneral = () => {
           width: "100%",
         }}
       >
-        <SaveButton>
-          <SaveText>저장</SaveText>
-        </SaveButton>
+        {!isEdited ? (
+          <InactiveSave>
+            <InactiveSaveText>저장</InactiveSaveText>
+          </InactiveSave>
+        ) : (
+          <SaveButton onClick={() => setIsEdit(true)}>
+            <SaveText>저장</SaveText>
+          </SaveButton>
+        )}
+
         <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
           <LogoutButton onClick={() => setLogoutModal(true)}>
             로그아웃
@@ -106,6 +168,15 @@ const PfEditGeneral = () => {
           buttonText2="네"
           onClick1={() => setLogoutModal(false)}
           onClick2={handleLogout}
+        />
+      )}
+      {isEdit && (
+        <PopupModal
+          content="수정한 내용을 저장하시겠습니까?"
+          buttonText1="취소"
+          buttonText2="네"
+          onClick1={() => setIsEdit(false)}
+          onClick2={handleEdit}
         />
       )}
     </Container>
@@ -168,8 +239,9 @@ const InputWrapper = styled.input`
   border: none;
   font-size: 16px;
   font-family: "Pretendard";
-  font-weight: 300;
+  font-weight: 400;
   color: black;
+  outline: none;
 
   &::placeholder {
     color: #767676;
@@ -188,7 +260,7 @@ const PasswordSection = styled.div`
 const PasswordField = styled.div`
   width: 800px;
   display: flex;
-  flex-direcrtion: row;
+  flex-direction: row;
   align-items: center;
   justify-content: flex-start;
   position: relative;
@@ -262,9 +334,27 @@ const SaveText = styled.span`
   font-weight: 500;
 `;
 
+const InactiveSave = styled.button`
+  background: #d9d9d9;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 30px;
+  padding: 18px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+`;
+
+const InactiveSaveText = styled.span`
+  color: #ffffff;
+  font-size: 18px;
+  font-family: "Pretendard";
+  font-weight: 500;
+`;
+
 const LogoutButton = styled.button`
   all: unset;
-  font-size: 18;
+  font-size: 18px;
   background-color: #929191;
   color: #ffffff;
   padding: 15px 20px;

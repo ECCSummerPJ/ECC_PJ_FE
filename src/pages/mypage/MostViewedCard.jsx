@@ -1,8 +1,42 @@
 import styled from "styled-components";
+import { useEffect, useState } from "react";
+import { api } from "../../lib/api";
 
-/* ===== 카드 영역 ===== */
+export default function MostViewedCard() {
+  const [isMostView, setIsMostView] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("/profile/statistics")
+      .then((res) => {
+        let list = res.data?.mostViewedScraps ?? [];
+        list = [...list].sort((a, b) => b.viewCount - a.viewCount); // 정렬
+        setIsMostView(list);
+        console.log("가장 많이 본 게시물 순위:", list);
+      })
+      .catch((err) => {
+        console.log("오류: ", err.response?.data || err.message);
+        setIsMostView([]);
+      });
+  }, []);
+
+  return (
+    <CardWrapper>
+      <CardTitle>가장 자주 본 스크랩</CardTitle>
+      <CardList>
+        {isMostView.map((item, idx) => (
+          <CardItem key={item.scrapId ?? idx}>
+            <CardItemNumber>{idx + 1}.</CardItemNumber>
+            <CardItemText>{item.title}</CardItemText>
+          </CardItem>
+        ))}
+      </CardList>
+    </CardWrapper>
+  );
+}
+
 const CardWrapper = styled.div`
-  width: 100%;
+  width: 30vw;
   // height: 544px;
   border: 1px solid #d7d7d7;
   border-radius: 30px;
@@ -46,29 +80,3 @@ const CardItemText = styled.div`
   font-family: Pretendard;
   font-weight: 400;
 `;
-
-const mostViewedScraps = [
-  "첫 번째로 자주 본 스크랩",
-  "두 번째로 자주 본 스크랩",
-  "세 번째로 자주 본 스크랩",
-  "네 번째로 자주 본 스크랩",
-  "다섯 번째로 자주 본 스크랩",
-];
-
-const cardTitle = "가장 많이 본 스크랩";
-
-export default function MostViewedCard() {
-  return (
-    <CardWrapper>
-      <CardTitle>{cardTitle}</CardTitle>
-      <CardList>
-        {mostViewedScraps.map((text, idx) => (
-          <CardItem key={idx}>
-            <CardItemNumber>{idx + 1}.</CardItemNumber>
-            <CardItemText>{text}</CardItemText>
-          </CardItem>
-        ))}
-      </CardList>
-    </CardWrapper>
-  );
-}
