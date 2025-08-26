@@ -3,7 +3,18 @@ import ProfileCard from "./ProfileCard";
 import MostScrapCard from "./MostScrapCard";
 import MostViewedCard from "./MostViewedCard";
 
-/* ===== 전체 래퍼 ===== */
+export function MyPage() {
+  return (
+    <PageWrapper>
+      <ProfileCard />
+      <CardSection>
+        <MostViewedCard />
+        <MostScrapCard />
+      </CardSection>
+    </PageWrapper>
+  );
+}
+
 const PageWrapper = styled.div`
   width: 100%;
   // height: 100%;
@@ -21,16 +32,3 @@ const CardSection = styled.div`
   align-items: center;
   gap: 60px;
 `;
-
-export function MyPage() {
-  return (
-    <PageWrapper>
-      <ProfileCard />
-      <CardSection>
-        <MostViewedCard />
-        <MostScrapCard />
-      </CardSection>
-    </PageWrapper>
-    
-  );
-}

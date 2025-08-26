@@ -35,6 +35,7 @@ export const Login = () => {
       window.token = token;
       const nickname = data.nickname || "닉네임";
       window.user = { ...(window.user || {}), nickname };
+      window.sessionStorage.setItem("accesstoken", data.accessToken);
       window.sessionStorage.setItem("nickname", nickname);
       window.sessionStorage.setItem("userId", data.userId);
       navigate("/loginok");
