@@ -45,6 +45,10 @@ const PfEditGeneral = () => {
     const body = { nickname, email, newPassword: newPassword || undefined };
     try {
       await api.patch("/profile", body);
+
+      window.sessionStorage.setItem("nickname", nickname);
+      window.sessionStorage.setItem("email", email);
+
       setIsEdit(false);
       navigate("/mypage");
       console.log("프로필 수정 성공:", body);
