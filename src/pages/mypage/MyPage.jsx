@@ -8,8 +8,10 @@ export function MyPage() {
     <PageWrapper>
       <ProfileCard />
       <CardSection>
-        <MostViewedCard />
-        <MostScrapCard />
+        <div style={{ display: "flex", gap: 50, alignItems: "flex-start" }}>
+          <MostViewedCard />
+          <MostScrapCard />
+        </div>
       </CardSection>
     </PageWrapper>
   );

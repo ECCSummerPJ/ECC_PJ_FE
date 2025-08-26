@@ -38,6 +38,7 @@ export const Login = () => {
       window.sessionStorage.setItem("accesstoken", data.accessToken);
       window.sessionStorage.setItem("nickname", nickname);
       window.sessionStorage.setItem("userId", data.userId);
+      window.sessionStorage.setItem("email", data.email);
       navigate("/loginok");
     } catch (err) {
       const status = err.response?.status;
