@@ -46,24 +46,21 @@ const NextButton = styled.div`
   user-select: none;
 `;
 
-const Pagination = ({ totalPages = 5 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const Pagination = ({ currentPage, totalPages = 1, onPageChange }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <PaginationWrapper>
       <PageList>
         {pages.map((page) => (
-          <PageButton key={page} onClick={() => setCurrentPage(page)}>
-            <PageNumber page={page} $active={page === currentPage}>
-              {page}
-            </PageNumber>
+          <PageButton key={page} onClick={() => onPageChange(page)}>
+            <PageNumber $active={page === currentPage}>{page}</PageNumber>
           </PageButton>
         ))}
       </PageList>
       <NextButton
         onClick={() =>
-          setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev))
+          onPageChange(currentPage < totalPages ? currentPage + 1 : currentPage)
         }
       >
         next &gt;
