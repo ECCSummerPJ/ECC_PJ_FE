@@ -70,14 +70,12 @@ const ItemSubtitle = styled.div`
 
 export default function LinkMind() {
   const [reminders, setReminders] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadScrapsReminder = async () => {
       try {
         const data = await getScrapsReminder();
-        console.log("링마인드 목록:", data);
-        setReminders(data);
+        setReminders(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("링마인드 불러오기 실패:", err);
       }
