@@ -97,8 +97,8 @@ export default function LinkMind() {
       </TitleGroup>
 
       <ListWrapper>
-        {reminders.length === 0 ? (
-          <div>리마인드가 없어요!</div>
+        {!reminders || reminders.length === 0 ? (
+          <div>스크랩이 없습니다!</div>
         ) : (
           reminders.map((item, i) => (
             <ListItem key={i}>
